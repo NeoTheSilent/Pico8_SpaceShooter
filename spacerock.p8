@@ -34,6 +34,20 @@ m2xdir=0
 m2ydir=0
 m2cd=540
 
+--planet for visuals
+p1x=130
+p1y=130
+p1xdir=0
+p1ydir=0.75
+p1cd=240
+
+--large meteor
+--will require 4 sprites
+lm1x=130
+lm1y=130
+lm1xdir=0.5
+lm1ydir=1
+lm1cd=60
 
 function jet()
 
@@ -116,11 +130,48 @@ function s_meteor()
  --laser destroying meteor
 end
 
+function l_meteor()
+--set location for meteor
+ if (lm1cd==0)
+ then
+  --reset the x direction
+  lm1xdir=1
+  --set spawn and reset cooldown
+  lm1x=rnd(128)
+  lm1y=0
+  lm1cd=120
+  
+  --affect direction
+  if lm1x>64
+  then lm1xdir*=-1
+  end  
+ end
+ --include functionality for
+ --laser destroying meteor
+end
+
+function planet()
+--set location for planet
+--same as meteors
+ if (p1cd==0)
+ then
+  --set spawn and reset cooldown
+  p1x=rnd(128)
+  --make sure it's on screen
+  if (p1x<16) then p1x+=16 end
+  if (p1x>112) then p1x-=16 end
+  p1y=0
+  p1cd=240 
+ end
+end
+
 function _update()
  jet()
  fire()
  fstars()
  s_meteor()
+ l_meteor()
+ planet()
  
  --gun cooldown
  if cldn<15 
@@ -165,35 +216,91 @@ function _update()
   m1x+=m1xdir
   m1y+=m1ydir
  end
+ 
+ --ditto for large meteors
+ if lm1cd>0
+ then lm1cd-=1
+ end
+ 
+ --spawning meteors
+ if lm1y<130
+ then
+  --make it move down
+  lm1x+=lm1xdir
+  lm1y+=lm1ydir
+ end
+ 
+ --set cooldown for planet
+ if p1cd>0 
+ then p1cd-=1
+ end
+ 
+ if p1y<130
+ then
+  p1y+=p1ydir
+ end
 end
 
 function _draw()
- --border
- rectfill(0,0,128,128,6)
+
+ ---- background
+ 
  --"space"
 	rectfill(2,2,126,126,0)
-	
-	--information for debug
-	print("cooldown: ",3,3,3)
-	print(cldn,39,3,3)
-	
-	print("m1cd: ",50,3,3)
-	print(m1cd,80,3,3)
-	print("m1y: ",90,3,3)
-	print(m1y,110,3,3)
-	
-	--sprite for jet
-	spr(001,jetx,jety)
-	--sprite for fire
-	spr(017,firex,firey)
+		
+	----foreground	
 	--sprite for stars
 	spr(002,s1x,s1y)
 	spr(003,s2x,s2y)
 	spr(004,s3x,s3y)
-	--sprite for meteors
+	--sprite for planet
+	spr(008,p1x,p1y)
+	spr(009,p1x+8,p1y)
+	spr(010,p1x+16,p1y)
+	spr(011,p1x+24,p1y)
+	spr(024,p1x,p1y+8)
+	spr(025,p1x+8,p1y+8)
+	spr(026,p1x+16,p1y+8)
+	spr(027,p1x+24,p1y+8)
+	spr(040,p1x,p1y+16)
+	spr(041,p1x+8,p1y+16)
+	spr(042,p1x+16,p1y+16)
+	spr(043,p1x+24,p1y+16)
+	spr(056,p1x,p1y+24)
+	spr(057,p1x+8,p1y+24)
+	spr(058,p1x+16,p1y+24)
+	spr(059,p1x+24,p1y+24)
+	--sprite for jet
+	spr(001,jetx,jety)
+	--sprite for fire
+	spr(017,firex,firey)
+		--sprite for meteors
 	spr(007,m1x,m1y)
 	spr(023,m2x,m2y)
+	--sprite for large meteors
+	spr(005,lm1x,lm1y)
+	spr(006,lm1x+8,lm1y)
+	spr(021,lm1x,lm1y+8)
+	spr(022,lm1x+8,lm1y+8)
 	
+	
+	----border and playerinfo
+	rectfill(0,0,128,16,5)
+	rectfill(0,15,128,16,14)
+ rectfill(0,0,1,128,14)
+ rectfill(0,0,128,1,14)
+ rectfill(128,0,126,126,14)
+ rectfill(0,126,128,128,14) 
+ 
+ --information for player
+	print("cooldown: ",3,3,3)
+	print(cldn,39,3,3)
+	
+	print("lm1cd: ",50,3,3)
+	print(lm1cd,80,3,3)
+	print("m1y: ",90,3,3)
+	print(m1y,110,3,3)
+
 end
 __gfx__
 00000000000660000600000000000070007000000000555555550000000000000000000000005555555500000000000000000000000000000000000000000000
