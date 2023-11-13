@@ -10,9 +10,12 @@ jetw=8
 jeth=8
 jmp=2
 cldn=15
+score=0
+sec30=30
+second=0
 --fire information
-firex=13
-firey=13
+firex=0
+firey=130
 --star information
 s1x=12
 s1y=0
@@ -48,6 +51,7 @@ lm1y=130
 lm1xdir=0.5
 lm1ydir=1
 lm1cd=60
+lm1dur=2
 
 function jet()
 
@@ -126,8 +130,7 @@ function s_meteor()
   end
   
  end
- --include functionality for
- --laser destroying meteor
+ 
 end
 
 function l_meteor()
@@ -146,8 +149,7 @@ function l_meteor()
   then lm1xdir*=-1
   end  
  end
- --include functionality for
- --laser destroying meteor
+
 end
 
 function planet()
@@ -173,6 +175,12 @@ function _update()
  l_meteor()
  planet()
  
+ if sec30>0
+ then sec30-=1
+ else sec30=30
+      second+=1
+ end
+ 
  --gun cooldown
  if cldn<15 
  then cldn+=1
@@ -186,6 +194,7 @@ function _update()
  --fire reseting
  if firey<3
  then firey=130
+      firex=0
  end
  
  --stars moving
@@ -222,6 +231,10 @@ function _update()
  then lm1cd-=1
  end
  
+ if lm1cd<5
+ then lm1dur=2
+ end
+ 
  --spawning meteors
  if lm1y<130
  then
@@ -239,6 +252,41 @@ function _update()
  then
   p1y+=p1ydir
  end
+ 
+ --laser functionality 
+ 
+ if ((abs(firex-m1x)<5) and (abs(firey-m1y)<5))
+ then
+  --reset small meteors
+  --"destroying meteor"
+  m1x=130
+  m1y=130
+  --"destroying laser"
+  firex=0
+  firey=130
+  --score
+  score+=1
+ end
+ 
+ if ((abs(firex-(lm1x+2))<8) 
+ and (abs(firey-(lm1y+8))<8))
+ then
+ --damage meteor
+ lm1dur-=1
+ firex=0
+ firey=130
+ if (lm1dur==0)
+ then
+  --reset large meteor
+  --"destroying meteor"
+  lm1dur=2
+  lm1x=130
+  lm1y=130
+  --score
+  score+=2
+  end
+ end
+ 
 end
 
 function _draw()
@@ -292,14 +340,21 @@ function _draw()
  rectfill(128,0,126,126,14)
  rectfill(0,126,128,128,14) 
  
- --information for player
-	print("cooldown: ",3,3,3)
-	print(cldn,39,3,3)
+ --debug (comment out)
+ 
+ --	print("cooldown: ",3,3,3)
+	--print(cldn,39,3,3)
 	
-	print("lm1cd: ",50,3,3)
-	print(lm1cd,80,3,3)
-	print("m1y: ",90,3,3)
-	print(m1y,110,3,3)
+	--print("lm1cd: ",50,3,3)
+	--print(lm1cd,80,3,3)
+	--print("score: ",90,3,3)
+	--print(score,120,3,3)
+	
+	print("score: ",5,6,3)
+	print(score,29,6,3)
+	
+	print("time: ",45,6,3)
+	print(second,65,6,3)
 
 end
 __gfx__
